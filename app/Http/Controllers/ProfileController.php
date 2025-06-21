@@ -21,11 +21,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function test(ProfileUpdateRequest $request)
-    {
-        return 2;
-    }
-
     /**
      * Update the user's profile information.
      */
