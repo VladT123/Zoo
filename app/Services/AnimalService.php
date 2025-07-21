@@ -18,7 +18,7 @@ class AnimalService
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $imagePath = $data['image']->store('animal_images', 'public');
             $data['image_path'] = $imagePath;
-            unset($data['image']); // Remove the image file object from data array
+            unset($data['image']);
         }
         return Animal::create($data);
     }
