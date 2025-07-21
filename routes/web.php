@@ -19,14 +19,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/animals/{id}', [AnimalController::class, 'update'])->name('animals.update');
+    Route::put('/cage/{id}', [ZooController::class, 'update'])->name('zoo.update');
+    Route::delete('/animals/{animal}', [AnimalController::class, 'destroy'])->name('animals.destroy');
+    Route::delete('/cage/{cage}', [ZooController::class, 'destroy'])->name('zoo.destroy');
+
 });
 
 Route::get('/animals', [AnimalController::class, 'index'])->name('animals.index');
 Route::get('/animals/{id}', [AnimalController::class, 'show'])->name('animals.show');
-Route::put('/animals/{id}', [AnimalController::class, 'update'])->name('animals.update');
 
 Route::get('/', [ZooController::class, 'index'])->name('zoo.index');
 Route::get('/cage/{id}', [ZooController::class, 'show'])->name('zoo.show');
-Route::put('/cage/{id}', [ZooController::class, 'update'])->name('zoo.update');
 
 require __DIR__.'/auth.php';

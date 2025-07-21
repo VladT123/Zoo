@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('age')->nullable();
             $table->foreignId('cage_id')->constrained()->onDelete('cascade');
+            $table->string('image_path')->nullable();
             $table->timestamps();
         });
     }

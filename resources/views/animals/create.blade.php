@@ -17,7 +17,7 @@
             <h3>Animal Details</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('animals.store') }}" method="POST">
+            <form action="{{ route('animals.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -52,8 +52,18 @@
 
                     <div class="col-md-6">
                         <div class="mb-3">
+                            <label for="image" class="form-label">Animal Image</label>
+                            <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                   id="image" name="image" accept="image/*">
+                            @error('image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <img id="image-preview" src="#" alt="Image preview" style="display:none;">
+                        </div>
+
+                        <div class="mb-3">
                             <label for="cage_id" class="form-label">Cage</label>
-                            <select class="form-select @error('cage_id') is-invalid @enderror"
+                            <select class="form-control @error('cage_id') is-invalid @enderror"
                                     id="cage_id" name="cage_id">
                                 <option value="">-- Select Cage --</option>
                                 @foreach($cages as $cage)
@@ -85,6 +95,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('image').addEventListener('change', function(event) {
+        const preview = document.getElementById('image-preview');
+        if (event.target.files && event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+</script>
 
 </body>
 </html>

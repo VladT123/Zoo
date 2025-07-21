@@ -43,6 +43,11 @@
                     <button type="submit" class="btn btn-primary">Update Cage</button>
                 </div>
             </form>
+            <form action="{{ route('zoo.destroy', $cage->id) }}" method="POST" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this cage? All animals in this cage will be removed.')">Delete Cage</button>
+            </form>
         </div>
     </div>
 </div>

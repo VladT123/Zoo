@@ -35,6 +35,10 @@
                             <span class="text-muted">Not assigned to any cage</span>
                         @endif
                     </p>
+                    @if($animal->image_path)
+                        <p><strong>Image:</strong></p>
+                        <img src="{{ asset('storage/' . $animal->image_path) }}" alt="{{ $animal->name }}" style="max-width: 200px;">
+                    @endif
                     <p><strong>Created At:</strong> {{ $animal->created_at->format('M d, Y H:i') }}</p>
                     <p><strong>Updated At:</strong> {{ $animal->updated_at->format('M d, Y H:i') }}</p>
                 </div>
@@ -44,11 +48,6 @@
 
     <div class="text-end">
         <a href="{{ route('animals.edit', $animal->id) }}" class="btn btn-warning me-2">Edit Animal</a>
-{{--        <form action="{{ route('animals.destroy', $animal->id) }}" method="POST" style="display: inline;">--}}
-{{--            @csrf--}}
-{{--            @method('DELETE')--}}
-{{--            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this animal?')">Delete Animal</button>--}}
-{{--        </form>--}}
     </div>
 </div>
 

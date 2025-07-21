@@ -14,7 +14,7 @@
             {{ session('success') }}
         </div>
     @endif
-
+        <p>There are currently {{$population}} animals</p>
         <div class="mb-3 d-flex justify-content-between">
             <a href="{{ route('zoo.create') }}" class="btn btn-primary">Add New Cage</a>
             <a href="{{ route('animals.index') }}" class="btn btn-secondary">View Animals</a>

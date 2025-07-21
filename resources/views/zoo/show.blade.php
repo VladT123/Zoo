@@ -25,11 +25,6 @@
                 </div>
                 <div class="col-md-6 text-end">
                     <a href="{{ route('zoo.edit', $cage->id) }}" class="btn btn-warning me-2">Edit Cage</a>
-{{--                    <form action="{{ route('cages.destroy', $cage->id) }}" method="POST" style="display: inline;">--}}
-{{--                        @csrf--}}
-{{--                        @method('DELETE')--}}
-{{--                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this cage? All animals in this cage will be removed.')">Delete Cage</button>--}}
-{{--                    </form>--}}
                 </div>
             </div>
         </div>

@@ -12,10 +12,13 @@ use App\Http\Requests\ProfileUpdateRequest;
 //use App\Repositories\DTO\WareDTO;
 //use App\Repositories\OrderRepository;
 //use App\Repositories\WareRepository;
+use App\Http\Requests\StoreAnimalRequest;
+use App\Http\Requests\UpdateAnimalRequest;
 use App\Models\Animal;
 use App\Models\Cage;
 use App\Repositories\AnimalRepository;
 use App\Repositories\CageRepository;
+use App\Services\AnimalService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,25 +33,7 @@ class AnimalController extends Controller
         $animals = $animalRepository->paginate();
         return view('animals.index', compact('animals'));
     }
-//
-//    public function create(CategoryRepository $categoryRepository): View
-//    {
-//        $categories = $categoryRepository->all();
-//        return view('ware.create', compact('categories'));
-//    }
-//
-//    public function store(StoreWareRequest $request,WareRepository $wareRepository): RedirectResponse
-//    {
-//        $wareRepository->create(new WareDTO(
-//            title: $request->title,
-//            description: $request->description??null,
-//            price: $request->price,
-//            category_id: $request->category_id
-//        ));
-//
-//        return redirect()->route('ware.index')->with('success', 'Ware created successfully');
-//    }
-//
+
     public function create(Request $request)
     {
         $cages = Cage::all();
@@ -62,32 +47,20 @@ class AnimalController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreAnimalRequest $request, AnimalService $animalService): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'species' => 'required|string|max:255',
-            'age' => 'required|integer|min:0',
-            'cage_id' => 'nullable|exists:cages,id',
-            'description' => 'nullable|string'
-        ]);
+        try {
+            $animal = $animalService->create($request->validated());
 
-        // Check if cage_id is provided and validate cage capacity
-        if (!empty($validated['cage_id'])) {
-            $cage = Cage::findOrFail($validated['cage_id']);
-            $currentAnimalsCount = $cage->animals()->count();
+            return redirect()
+                ->route('animals.show', $animal->id)
+                ->with('success', 'Animal created successfully');
 
-            if ($currentAnimalsCount >= $cage->volume) {
-                return back()
-                    ->withInput()
-                    ->withErrors(['cage_id' => 'The selected cage is already at full capacity']);
-            }
+        } catch (\RuntimeException $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['cage_id' => $e->getMessage()]);
         }
-
-        $animal = Animal::create($validated);
-
-        return redirect()->route('animals.show', $animal->id)
-            ->with('success', 'Animal created successfully');
     }
     public function show($id)
     {
@@ -102,44 +75,24 @@ class AnimalController extends Controller
         return view('animals.edit', compact('animal', 'cages'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateAnimalRequest $request,AnimalService $animalService, $id)
     {
-        $animal = Animal::findOrFail($id);
+        try {
+            $animal = $animalService->update($id, $request->validated());
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'species' => 'required|string|max:255',
-            'age' => 'required|integer|min:0',
-            'cage_id' => 'nullable|exists:cages,id',
-            'description' => 'nullable|string'
-        ]);
+            return redirect()
+                ->route('animals.show', $animal->id)
+                ->with('success', 'Animal updated successfully');
 
-        $animal->update($validated);
-
-        return redirect()->route('animals.show', $animal->id)
-            ->with('success', 'Animal updated successfully');
+        } catch (\RuntimeException $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['cage_id' => $e->getMessage()]);
+        }
     }
-//
-//    public function edit(Ware $ware, CategoryRepository $categoryRepository): View
-//    {
-//        $categories = $categoryRepository->all();
-//        return view('ware.edit', compact('ware', 'categories'));
-//    }
-//
-//    public function update(UpdateWareRequest $request, Ware $ware, WareRepository $wareRepository): RedirectResponse
-//    {
-//        $wareRepository->update($ware,new WareDTO(
-//            title: $request->title,
-//            description: $request->description??null,
-//            price: $request->price,
-//            category_id: $request->category_id
-//        ));
-//        return redirect()->route('ware.index')->with('success', 'Ware updated successfully');
-//    }
-//
-//    public function destroy(Ware $ware, WareRepository $wareRepository): RedirectResponse
-//    {
-//        $wareRepository->delete($ware);
-//        return redirect()->route('ware.index')->with('success', 'Ware deleted successfully');
-//    }
+
+    public function destroy(Animal $animal){
+        $animal->delete();
+        return redirect(route('zoo.index', absolute: false));
+    }
 }

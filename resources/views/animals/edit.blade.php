@@ -17,7 +17,7 @@
             <h3>Animal Information</h3>
         </div>
         <div class="card-body">
-            <form action="{{ route('animals.update', $animal->id) }}" method="POST">
+            <form action="{{ route('animals.update', $animal->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -53,6 +53,26 @@
 
                     <div class="col-md-6">
                         <div class="mb-3">
+                            <label for="image" class="form-label">Animal Image</label>
+                            <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                   id="image" name="image" accept="image/*">
+                            @error('image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @if($animal->image_path)
+                                <div class="mt-2" style="position: relative; display: inline-block;">
+                                    <strong>Current Image:</strong>
+                                    <div class="mt-2">
+                                        <img src="{{ asset('storage/' . $animal->image_path) }}" alt="Current animal image" style="max-width: 200px; display: block;">
+                                        <button type="button" onclick="removeImage()" style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">×</button>
+                                    </div>
+                                    <input type="hidden" id="remove_image_flag" name="remove_image" value="0">
+                                </div>
+                            @endif
+                            <img id="image-preview" src="#" alt="New image preview" style="display:none; max-width: 200px; margin-top: 10px;">
+                        </div>
+
+                        <div class="mb-3">
                             <label for="cage_id" class="form-label">Cage</label>
                             <select class="form-select @error('cage_id') is-invalid @enderror"
                                     id="cage_id" name="cage_id">
@@ -84,9 +104,38 @@
                     <button type="submit" class="btn btn-primary">Update Animal</button>
                 </div>
             </form>
+            <form action="{{ route('animals.destroy', $animal->id) }}" method="POST" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this animal?')">Delete Animal</button>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('image').addEventListener('change', function(event) {
+        const preview = document.getElementById('image-preview');
+        if (event.target.files && event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+
+    function removeImage() {
+        document.getElementById('remove_image_flag').value = '1';
+        const imageContainer = document.querySelector('.mb-3 .mt-2');
+        if (imageContainer) {
+            imageContainer.style.display = 'none';
+        }
+    }
+</script>
 
 </body>
 </html>
