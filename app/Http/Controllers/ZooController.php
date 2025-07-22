@@ -45,9 +45,18 @@ class ZooController extends Controller
 
     public function update(UpdateCageRequest $request, CageRepository $cageRepository, $id)
     {
-        $cage = $cageRepository->update($id, $request->validated());
-        return redirect()->route('zoo.show', $cage->id)
-            ->with('success', 'Cage updated successfully');
+
+        try {
+            $cage = $cageRepository->update($id, $request->validated());
+
+            return redirect()->route('zoo.show', $cage->id)
+                ->with('success', 'Cage updated successfully');
+
+        } catch (\RuntimeException $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['volume' => $e->getMessage()]);
+        }
     }
 
     public function create()
